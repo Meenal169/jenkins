@@ -1,1 +1,36 @@
+On browser open jenkins installation on ubuntu "https://www.jenkins.io/doc/book/installing/linux/"
+installation of java'
+sudo apt update
+sudo apt install openjdk-11-jre
+java -version
+
+inside weekly release 
+
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+  
+sudo apt-get update
+sudo apt-get install jenkins
+
+systemctl status jenkins -- it should be running in green color
+
+go to instance>SG>inbound rule>edit>8080> myip
+take public ip of an instance:8080
+
+Unlock jenkins_----
+
+copy the path -- sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+then install suggested plugins
+
+create first admin user--- it is important to create admin user bz admin can add users to the jenkins 
+after creating a admin you will get an jenkins url eg. http://35.154.211.152:8080/
+
+Jenkins is ready!!
+
+start using Jenkins!!
+
 
