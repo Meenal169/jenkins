@@ -1,0 +1,95 @@
+we need 2 ec2 instances i.e jenkins-master and jenkins-agent
+-------------------------------------------------------------------------------------------------------
+ON MASTER
+
+download java and jenkins
+-------------------------------------------------------------------------------------------------------
+
+sudo apt update
+sudo apt install openjdk-11-jre
+java -version
+
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+  
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+  
+sudo apt-get update
+sudo apt-get install jenkins
+--------------------------------------------------------------------------------------------------------
+create ssh key
+
+go to -
+-cd .ssh/
+->ssh-keygen
+-> id-rsa and id-rsa.pub
+-> copy public key i.e id-rsa.pub
+----------------------------------------------------------------------------------------------------------
+On JENKINS-AGENT
+go to
+-> cd .ssh/
+->sudo vim authorize key
+-> paster the public key 
+-> esc:wq
+--------------------------------------------------------------------------------------------------------------
+ON MASTER NODE
+create a ssh conn bet master and node 
+
+ssh ubuntu@public ip of agent node
+
+once connection is established then exit
+
+-------------------------------------------------------------------------------------------------------------
+
+go to browser > public ip of master:8080
+you will get jenkins page
+copy the path on master and cat /var/lib/jenkins/
+copy the pass and paste it on jenkins page> install the req plugins> start using jenkins
+
+---------------------------------------------------------------------------------------------------------------
+
+Step1:
+go to create a agent
+
+Name:
+Description:
+Root Dir: /home/ubuntu
+Label: django
+Launch mtd: launch mth via ssh
+host: public ip of agent
+cred: add>kind:ssh username with private key>give id>descri>username of agent>private key>add
+      private key is available on master> cat id_rsa
+cred: select new cred
+Host key veri: non verifying strategy (means your agent have private key)
+Keep this agent online as much as possible
+done
+-----------------------------------------------------------------------------------------------------------------
+Step2:
+create a pipeline job
+create a pipeline> 
+description
+github project url
+build trigger: github hook trigger for gitscm polling
+
+setup a github webhook
+
+copy  the browser ip>go to project git repo>setting>webhook>add webhook>paster the ip/github-webhook/>refresh > it should have right mark tick
+
+Pipeline script>select github SCm
+create a jenkinsfile for pipeline> upload there
+-----------------------------------------------------------------------------------------------------------------------------------
+
+Step3:
+go to manage jenkins>plugins>available plugin>search env>select env injector>download and restart
+
+---------------------------------------------------------------------------------------------------------------------------------
+Step4z:
+go to manage jenkins>manage cred>global> add cred>kind:username with pass>username of docker ac>pass of docker ac>description>create
+
+we are doing this step to encrypt the pass
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+build the job
