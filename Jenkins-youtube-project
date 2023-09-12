@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage("Code Clone") {
+           steps {
+               echo "cloning the code"
+               git url: "https://github.com/Meenal169/django-notes-app.git", branch: "main"
+           } 
+        }
+        stage("build") {
+             steps {
+               echo "building the code"
+               sh "docker build -t my-test-app ."
+              
+           } 
+        }
+        stage("push to dockerhub") {
+            steps {
+              echo "pushing the image to docker hub" 
+              withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
+              sh "docker tag my-test-app ${env.dockerHubUser}/my-test-app:latest"      
+              sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+              sh "docker push ${env.dockerHubUser}/my-test-app:latest"
+              }
+           }  
+        }
+        stage("deploy") {
+            steps {
+               echo "deploying the container"
+               sh "docker run -d -p 8000:8000 noplanetb/my-test-app:latest"
+           }  
+        }
+    }
+}
+
+
+If want to use docker-compose the replace "sh docker run -d -p 8000:8000 noplanetb/my-test-app:latest" with "sh docker-compose down && docker-compose up -d"
+
+
+Step1:
+create an EC2 instance>connect to terminal> clone git code [django-notes-app] > go to that repo> update the repo> sudo apt-get update>
+
+Step2:
+install docker > sudo apt-get install docker.io > give permission sudo usermod -aG docker $USER > sudo reboot > connect again > docker build -t notes-app.
+
+Step3:
+Install Java > Install jenkins > login to jenkins page > public ip of Ec2:8080
+
+Step4:
+Open 8080 post on EC2
+
+Step5:
+create jenkins new job > select pipeline > give descri > in the pipeline write this pipeline script and save it
+
+Step6: for encrypted pass > go to manage jenkins > creds > system > global cred > add cred > give ID eg dockerHub > username as docker username eg noplanetb > password (pass of docker hub account)
+
+Step7: 
+this project is working on 8000 port so make sure to open port no 8000 in ec2
+
+Step8:
+if want to take the script from git >copy the code snd save it in the git > check the branch eg. main > then in the pipeline section select > pipeline script from SCM > give git url > branch(main) > script path > save
+
+
